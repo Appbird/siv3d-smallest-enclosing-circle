@@ -1,6 +1,7 @@
 # pragma once
 # include <Siv3D.hpp> // Siv3D v0.6.15 
 # include "SmallestEnclosingCircle.hpp"
+# include "Generator.hpp"
 
 
 struct TestCaseResult {
@@ -87,9 +88,10 @@ void VisualRandomTest()
     auto& rng = GetDefaultRNG();
     Array<Vec2> points;
     const Vec2 center_f = Scene::CenterF();
-    auto points_generator = [&](DefaultRNG& rng) -> Vec2 {
-        
-    };
+    
+    const size_t N = 10000;
+    constexpr double EPSILON = 1e-8;
+
     // Smalleset Enclosing Circle
     TestCaseResult result;
     

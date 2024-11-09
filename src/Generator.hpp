@@ -21,6 +21,7 @@ Array<Vec2> GetInputFromFile(const FilePath& filepath) {
 }
 void WriteInputToFile(const FilePath& filepath, const Array<Vec2>& points) {
     std::ofstream fout{filepath.toUTF8()};
+    // #FIXME: Assertion failed: (fout), function WriteInputToFile, file Generator.hpp, line 24.
     assert(fout);
     fout << points.size() << std::endl;
     for (int32_t i = 0; i < points.size(); i++) {
@@ -63,7 +64,7 @@ Array<Vec2> GenerateHugeLarge(size_t N, DefaultRNG& rng) {
     return points;
 }
 
-Array<Vec2> GenerateShuffled(size_t N, DefaultRNG& rng) {
+Array<Vec2> GenerateShuffled(size_t N) {
     Array<Vec2> points(N);
     NormalDistribution<double> dist{0, 1e17};
     for (int32 i = 0; i < N; ++i)
@@ -74,6 +75,20 @@ Array<Vec2> GenerateShuffled(size_t N, DefaultRNG& rng) {
 }
 
 void GenerateLargeInputs() {
+    const uint64 seed = 0;
     DefaultRNG rng = GetDefaultRNG();
-    //= GeneratePoints(300, rng);
+    rng.seed(seed);
+    // FIXME: 何か間違っていそう...
+    auto tofullpath = [&](const String& filestem){ return U"App/input-auto/{}.txt"_fmt(filestem); };
+    for (int32_t i = 0; i < 5; i++) {
+        WriteInputToFile(tofullpath(U"huge-small-{}"_fmt(i)), GenerateHugeSmall(300, rng));
+        WriteInputToFile(tofullpath(U"huge-large-{}"_fmt(i)), GenerateHugeLarge(300, rng));
+    }
+    WriteInputToFile(tofullpath(U"shuffled"),   GenerateShuffled(300));
+    for (int32_t i = 0; i < 10; i++) {
+        WriteInputToFile(tofullpath(U"many-1e4-{}"_fmt(i)), GeneratePoints(1e4, rng));
+    }
+    for (int32_t i = 0; i < 25; i++) {
+        WriteInputToFile(tofullpath(U"many-1e5-{}"_fmt(i)), GeneratePoints(1e5, rng));
+    }
 }
