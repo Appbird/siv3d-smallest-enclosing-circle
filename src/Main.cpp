@@ -8,18 +8,7 @@ constexpr bool VISUALIZE = true;
 constexpr int32_t N = 100;
 
 
-/**
- * @brief `N`点のランダムな点を、`points_generator`を用いて生成し、その生成された点群を返す。
- * 
- * @param rng 乱数生成器
- * @param points_generator 乱数生成器を用いてランダムな点を一つ返す関数
- * @return Array<Vec2> 生成された点群
- */
-Array<Vec2> GeneratePoints(
-    const int32_t N,
-    DefaultRNG& rng,
-    std::function<Vec2(DefaultRNG&)> points_generator
-);
+
 
 void VisualRandomTest()
 {
@@ -39,9 +28,7 @@ void VisualRandomTest()
     Array<Vec2> points;
     const Vec2 center_f = Scene::CenterF();
     auto points_generator = [&](DefaultRNG& rng) -> Vec2 {
-        NormalDistribution<double> dist_x{center_f.x, center_f.x / 4};
-        NormalDistribution<double> dist_y{center_f.x, center_f.x / 4};
-        return Vec2{dist_x(rng), dist_y(rng)};
+        
     };
     // Smalleset Enclosing Circle
     TestCaseResult result;
@@ -95,20 +82,5 @@ void VisualRandomTest()
 }
 
 void Main() {
-    VISUALIZE ? VisualRandomTest() : FastTest();
-}
-
-
-
-
-Array<Vec2> GeneratePoints(
-    const int32_t N,
-    DefaultRNG& rng,
-    std::function<Vec2(DefaultRNG&)> points_generator
-) {
-    Array<Vec2> points;
-    for (int32_t i = 0; i < N; i++) {
-        points.push_back(points_generator(rng));
-    }
-    return points;
+    VisualRandomTest();
 }
