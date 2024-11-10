@@ -22,9 +22,9 @@ $S$ の最小包含円 $C$ 、すなわち $S \subset C$ であるような面�
 - Emo Welzl. "Smallest enclosing disks (balls and ellipsoids)." New Results and New Trends in Computer Science 555 (1991): 359-370.
 
 
-# テスト形式の解説
+# テスト
 
-以下では、関数`SmallestEnclosingCircle`をどのような形式で検証したかについて解説します。
+以下では、関数`SmallestEnclosingCircle`をどのようにテストしたかについて解説します。
 
 ## 入力
 殆どのテスト入力は以下の形式で`App/input-auto/*.txt`, `App/input-handmade/*.txt`に記録されています。1ファイルが1問題例に相当します。
