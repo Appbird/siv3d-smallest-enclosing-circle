@@ -10,7 +10,7 @@ Authors (敬称略): Nachia, Luke256, ラクラムシ, polyster, あぷりばー
 $S$ の最小包含円 $C$ 、すなわち、 $S \subset C$ であるような面積最小の円 $C$ を求めてください。
 
 ### 制約
-- $1 \leq N \leq 2 \times 10^5$
+- $0 \leq N \leq 2 \times 10^5$
 - $X_i, Y_i$ は小数で、C++の`double`型で表現できる。  ($0 \leq i < N$)
 - $X_i, Y_i \leq 10^{18}$ ( $0 \leq i < N$ )
 - $(X_i, Y_i) \neq (X_j, Y_j)$とは**限らない** ($0 \leq i < j < N$)
