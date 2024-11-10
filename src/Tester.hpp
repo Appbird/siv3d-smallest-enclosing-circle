@@ -214,16 +214,19 @@ void FullTest(const double EPSILON = 1e-8) {
         logger << U"result: {}"_fmt((success == all_cases.size()) ? U"[AC]" : U"[WA]");
     }
     
-    // 現在の問題例を表す点群
+    // テスト結果のビジュアライザ
+    // タイトルを含める
     Array<FilePath> all_cases_title(all_cases.size());
     for (size_t i = 0; i < all_cases.size(); i++) {
         all_cases_title[i] = U"[{}] {}"_fmt(all_cases_judgestate[i], FileSystem::FileName(all_cases[i]));
     }
-
-    // テスト結果のビジュアライザ
+    // 問題例をあらわす点群を格納する配列
     Array<Vec2> current_instance;
+    // 現在選択している問題例に対するテスト結果
     TestCaseResult testcase_result;
+    // 問題例を選択するためのUI
     ListBoxState case_list { all_cases_title };
+    // 現在選んでいる問題例の番号
     Optional<size_t> current_selection = 0;
     bool if_drawExpectedCircle = false;
     const RectF view_area = {0, 0, 600, 600};

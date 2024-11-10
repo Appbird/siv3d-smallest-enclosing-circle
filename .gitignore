@@ -2,4 +2,4 @@ App/empty.App
 App/engine
 App/example
 build
-App/Input-auto
+App/Input-auto/many-*
