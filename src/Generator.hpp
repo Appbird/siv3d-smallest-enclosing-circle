@@ -9,24 +9,16 @@ NormalDistribution<double> StandardDistribution() {
     return NormalDistribution<double>{center_f.x, center_f.x / 4};
 }
 
-Array<Vec2> GetInputFromFile(const FilePath& filepath) {
-    std::ifstream fin{filepath.toUTF8()};
-    assert(fin);
-    int32_t N; fin >> N;
-    Array<Vec2> result(N);
-    for (int32_t i = 0; i < N; i++) {
-        fin >> result[i].x >> result[i].y;
-    }
-    return result;
-}
 void WriteInputToFile(const FilePath& filepath, const Array<Vec2>& points) {
     std::ofstream fout{filepath.toUTF8()};
-    // #FIXME: Assertion failed: (fout), function WriteInputToFile, file Generator.hpp, line 24.
+    // #FIXED: Assertion failed: (fout), function WriteInputToFile, file Generator.hpp, line 24.
     assert(fout);
-    fout << points.size() << std::endl;
+    fout << points.size() << "\n";
+    fout << std::setprecision(16);
     for (int32_t i = 0; i < points.size(); i++) {
-        fout << points[i].x << " " << points[i].y << std::endl;
+        fout << points[i].x << " " << points[i].y << "\n";
     }
+    fout << std::flush;
 }
 
 /**
@@ -49,7 +41,7 @@ Points GeneratePoints(
 
 Array<Vec2> GenerateHugeSmall(size_t N, DefaultRNG& rng) {
     Array<Vec2> points(N);
-    NormalDistribution<double> dist{1e17, 500};
+    NormalDistribution<double> dist{1e12, 50000};
     for (size_t i = 0; i < N; i++) {
         points[i] = {dist(rng), dist(rng)};
     }
@@ -75,11 +67,10 @@ Array<Vec2> GenerateShuffled(size_t N) {
 }
 
 void GenerateLargeInputs() {
-    const uint64 seed = 0;
     DefaultRNG rng = GetDefaultRNG();
+    const uint64 seed = 0;
     rng.seed(seed);
-    // FIXME: 何か間違っていそう...
-    auto tofullpath = [&](const String& filestem){ return U"App/input-auto/{}.txt"_fmt(filestem); };
+    auto tofullpath = [&](const String& filestem){ return U"input-auto/{}.txt"_fmt(filestem); };
     for (int32_t i = 0; i < 5; i++) {
         WriteInputToFile(tofullpath(U"huge-small-{}"_fmt(i)), GenerateHugeSmall(300, rng));
         WriteInputToFile(tofullpath(U"huge-large-{}"_fmt(i)), GenerateHugeLarge(300, rng));

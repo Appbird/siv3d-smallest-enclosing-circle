@@ -4,18 +4,18 @@
 #include "Generator.hpp"
 
 enum class ApplicationMode {
-    FastTest,
+    FullTest,
     RandomTest,
     GenerateInput
 };
+constexpr ApplicationMode mode = ApplicationMode::FullTest;
 // Modify this line to change the behavior of this application.
-constexpr ApplicationMode mode = ApplicationMode::GenerateInput;
+constexpr double EPSILON = 1e-8;
 
 void Main() {
-    switch (mode)
-    {
-        case ApplicationMode::FastTest:
-            // TODO: ここの実装
+    switch (mode) {
+        case ApplicationMode::FullTest:
+            FullTest(EPSILON);
             break;
         case ApplicationMode::RandomTest:
             VisualRandomTest();

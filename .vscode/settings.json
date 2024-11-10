@@ -92,6 +92,8 @@
         "*.inc": "cpp",
         "execution": "cpp",
         "valarray": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "forward_list": "cpp",
+        "print": "cpp"
     }
 }

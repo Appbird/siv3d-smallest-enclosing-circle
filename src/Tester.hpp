@@ -11,7 +11,7 @@ struct TestCaseResult {
     double process_time;
     /** テスト対象の方法で算出された最小包含円 */
     Circle actual;
-    /** ナイーブな方法で算出された、正しいと考えられる最小包含円。TestEnclosingで計算されたものはその限りでない。 */
+    /** ナイーブな方法で算出された、正しいと考えられる最小包含円。 */
     Circle expected;
 };
 
@@ -31,6 +31,10 @@ Circle SmallestEnclosingCircleNaive(const Array<Vec2>& points, const double epsi
 {
     const auto convexHull = Geometry2D::ConvexHull(points).outer();
     const auto n = convexHull.size();
+    if (n == 0) {
+        if (points.size() == 0) { return Circle{}; }
+        return Circle{points[0], 0};
+    }
     Circle smallest{ 0, 0, Math::Inf };
     for (size_t i = 2; i < n; ++i)
     for (size_t j = 1; j < i; ++j)
@@ -69,6 +73,12 @@ TestCaseResult TestSmallestEnclosing(const Array<Vec2>& points, const double eps
     };
 };
 
+void VisualizeTest(
+    const Array<Vec2>& points,
+    const 
+) {
+
+}
 
 
 void VisualRandomTest()
@@ -141,4 +151,53 @@ void VisualRandomTest()
         Print << U"test_count: {}"_fmt(test_count);
         Print << U"Result: {}"_fmt(result.succeeded ? U"OK" : U"NG");
 	}
+}
+
+#include <fstream>
+Array<Vec2> GetInputFromFile(const FilePath& filepath) {
+    std::ifstream fin{filepath.toUTF8()};
+    assert(fin);
+    int32_t N; fin >> N;
+    Array<Vec2> result(N);
+    for (int32_t i = 0; i < N; i++) {
+        fin >> result[i].x >> result[i].y;
+    }
+    return result;
+}
+
+void FullTest(const double EPSILON = 1e-8) {
+    
+    Logger << U"[FullTest at {}]"_fmt(DateTime::Now());
+    int32 total_case = 0; 
+    int32 success = 0;
+    auto fulltest = [&](const FilePath& testset){
+        const Array<FilePath> paths = FileSystem::DirectoryContents(testset);
+        for (const FilePath& path : paths) {
+            total_case++;
+            const Array<Vec2> input = GetInputFromFile(path);
+            const String casename = FileSystem::FileName(path);
+            
+            TestCaseResult result = TestSmallestEnclosing(input, EPSILON);
+            const String judge_state = result.succeeded ? U"\e[42m\e[37m[AC]\e[0m" : U"\e[43m\e[37m[WA]\e[0m";
+            if (result.succeeded) { success++; }
+            
+            const String TestCaseTitle = U"\n[{}] {}"_fmt(casename, judge_state);
+            Console << TestCaseTitle;
+            Console << TestCaseTitle;
+            Console << U"\ttime: {:.9f}s"_fmt(result.process_time);
+            Console << U"\texpected: (center, r) = ({}, {})"_fmt(result.expected.center, result.expected.r);
+            Console << U"\tactual:   (center, r) = ({}, {})"_fmt(result.actual.center, result.actual.r);
+        }
+    };
+    fulltest(U"input-handmade");
+    fulltest(U"input-auto");
+    Console << U"[AC] x {} / {}"_fmt(success, total_case);
+    Console << U"result: {}"_fmt((success == total_case) ? U"[AC]" : U"[WA]");
+
+
+    while (System::Update()) {
+        if (KeyLeft) {
+
+        }
+    }
 }
