@@ -58,7 +58,6 @@ Array<Vec2> GenerateHugeLarge(size_t N, DefaultRNG& rng) {
 
 Array<Vec2> GenerateShuffled(size_t N) {
     Array<Vec2> points(N);
-    NormalDistribution<double> dist{0, 1e17};
     for (int32 i = 0; i < N; ++i)
     {
         points[i] = OffsetCircular{ Scene::CenterF(), (200.0 * i / N), (120_deg * i) };
