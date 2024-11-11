@@ -3,14 +3,16 @@
 
 /**
  * @brief 円`C`内に点`p`が含まれているかを判定する。
- * @note 判定する際、`p`が`C`外にあってもその距離の相対誤差が`relative_error`以下であれば含まれていると判定する。
+ * @note 判定する際、`p`が`C`外にあってもその距離の相対誤差または絶対誤差が`error`以下であれば含まれていると判定する。
  */
-inline bool contains(const Circle& C, const Vec2& p, const double relative_error = 1e-8) {
+inline bool contains(const Circle& C, const Vec2& p, const double error = 1e-8) {
     const double d_sq = (C.center - p).lengthSq();
     const double r_sq = Math::Square(C.r);
     // d_sq < r_sqならば、点`p`は円の内側にあるので一旦絶対誤差を0とおいて下の条件式が通るようにしておく。
     const double abs_err = Max(0., d_sq - r_sq);
-    return abs_err/r_sq  < relative_error;
+    // 相対誤差もしくは絶対誤差のいずれかが許容誤差内ならば許容
+    if (r_sq == 0) { return abs_err < error; }
+    return abs_err/r_sq < error or abs_err < error;
 }
 
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2);

@@ -54,8 +54,10 @@ Circle SmallestEnclosingCircleNaive(const Array<Vec2>& points, const double epsi
     return smallest;
 }
 
-bool EqualRelativeErr(const double expected, const double actual, const double relative_err = 1e-8) {
-    return (actual - expected) / expected < relative_err;
+bool EqualRelativeErr(const double expected, const double actual, const double err = 1e-8) {
+    const double abs_err = AbsDiff(expected, actual);
+    if (expected == 0) { return abs_err < err; }
+    return abs_err/expected < err or abs_err < err;
 }
 
 // 最小性と包含性をチェックする。（低速）
@@ -73,8 +75,8 @@ TestCaseResult TestSmallestEnclosing(const Array<Vec2>& points, const double eps
 
     const bool succeeded =
         EqualRelativeErr(expected.center.x, actual.center.x, epsilon)
-        && EqualRelativeErr(expected.center.y, actual.center.y, epsilon)
-        && EqualRelativeErr(expected.r, actual.r, epsilon);
+        and EqualRelativeErr(expected.center.y, actual.center.y, epsilon)
+        and EqualRelativeErr(expected.r, actual.r, epsilon);
     return TestCaseResult{
         succeeded,
         time,
@@ -94,14 +96,14 @@ void DrawTestResult(
     for (const Vec2& point : points)
     {
         const bool is_point_enclosed = contains(result.actual, point, EPSILON);
-        Circle{point, 2 * point_scaling}.draw(
+        Circle{point, 2.5 * point_scaling}.draw(
             is_point_enclosed ? HSV{131, 0.78, 0.90} : HSV{131, 0, 1}
         );
     }
-    result.actual.drawFrame(2.0 * point_scaling, HSV{131, 0.78, 0.90}).draw(HSV{131, 0.78, 0.90, 0.05});
+    result.actual.drawFrame(1.0 * point_scaling, HSV{131, 0.78, 0.90}).draw(HSV{131, 0.78, 0.90, 0.05});
     if (not result.succeeded)
     {
-        result.expected.drawFrame(2.0 * point_scaling, HSV{35, 0.78, 0.90});
+        result.expected.drawFrame(1.0 * point_scaling, HSV{35, 0.78, 0.90});
     }
     // 結果の詳細を右上に示す。
     Print << testcase_name;
@@ -201,6 +203,7 @@ void FullTest(const double EPSILON = 1e-8) {
     const RectF view_area = {0, 0, 600, 600};
     Mat3x2 viewport_affine;
     double point_scale = 1;
+    
     while (System::Update()) {
         ClearPrint();
         if (case_list.selectedItemIndex and current_selection != case_list.selectedItemIndex) {
