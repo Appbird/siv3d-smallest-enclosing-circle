@@ -25,15 +25,6 @@ Circle SmallestEnclosingCircleNaive(const Array<Vec2>& points, const double epsi
  */
 TestCaseResult TestSmallestEnclosing(const Array<Vec2>& points, const double epsilon = 1e-8);
 
-/**
- * @brief 
- * 
- * @param expected 
- * @param actual 
- * @param relative_err 
- */
-bool RelativeAbsDiff(const double expected, const double actual, const double relative_err = 1e-8);
-
 // テスト用コード by ラクラムシさん
 // 愚直な方法（四重ループ）で最小包含円問題を解く
 Circle SmallestEnclosingCircleNaive(const Array<Vec2>& points, const double epsilon)
@@ -63,7 +54,7 @@ Circle SmallestEnclosingCircleNaive(const Array<Vec2>& points, const double epsi
     return smallest;
 }
 
-bool RelativeAbsDiff(const double expected, const double actual, const double relative_err = 1e-8) {
+bool EqualRelativeErr(const double expected, const double actual, const double relative_err = 1e-8) {
     return (actual - expected) / expected < relative_err;
 }
 
@@ -81,8 +72,9 @@ TestCaseResult TestSmallestEnclosing(const Array<Vec2>& points, const double eps
     const double time = double(duration.count()) / 1e9;
 
     const bool succeeded =
-        actual.center.distanceFromSq(expected.center) < epsilon
-        && Math::Abs(actual.r - expected.r) < epsilon;
+        EqualRelativeErr(expected.center.x, actual.center.x, epsilon)
+        && EqualRelativeErr(expected.center.y, actual.center.y, epsilon)
+        && EqualRelativeErr(expected.r, actual.r, epsilon);
     return TestCaseResult{
         succeeded,
         time,
@@ -141,7 +133,8 @@ Array<FilePath> ReadAllTestCases() {
 /** @brief all_casesに渡された問題例が合致しているかを判定し、ログファイル`fulltest.log`・`test_results`にその結果を格納する。 */
 void TestAllCases(
     const Array<FilePath>& all_cases,
-    Array<TestCaseResult>& test_results
+    Array<TestCaseResult>& test_results,
+    const double epsilon
 ) {
     size_t success = 0;
     TextWriter logger{U"fulltest.log"};
@@ -149,7 +142,7 @@ void TestAllCases(
         const Array<Vec2> input = GetInputFromFile(path);
         const String casename = FileSystem::FileName(path);
         
-        TestCaseResult result = TestSmallestEnclosing(input, EPSILON);
+        TestCaseResult result = TestSmallestEnclosing(input, epsilon);
         test_results.push_back(result);
         const String judge_state = result.succeeded ? U"[AC]" : U"[WA]";
         const String judge_state_cmd = result.succeeded ? U"\e[42m\e[37m[AC]\e[0m" : U"\e[43m\e[37m[WA]\e[0m";
@@ -165,7 +158,7 @@ void TestAllCases(
     logger << U"result: {}"_fmt((success == all_cases.size()) ? U"[AC]" : U"[WA]");
 }
 
-Mat3x2 RenderedAreaMut(const Array<Vec2>& current_instance, const RectF& view_area, double& point_scale) {
+Mat3x2 RenderedAreaMat(const Array<Vec2>& current_instance, const RectF& view_area, double& point_scale) {
     // 描画すべき範囲を求めておき、後でTransformer2Dに適用する。
     Vec2 min_point = {1e18, 1e18}, max_point = {-1e18, -1e18};
     for (const Vec2& point : current_instance) {
@@ -189,10 +182,10 @@ void FullTest(const double EPSILON = 1e-8) {
     Logger << U"[FullTest at {}]"_fmt(DateTime::Now());
     Array<FilePath> all_cases = ReadAllTestCases();
     Array<TestCaseResult> test_results;
-    TestAllCases(all_cases, test_results);
+    TestAllCases(all_cases, test_results, EPSILON);
     
     // テスト結果のビジュアライザ
-    // タイトルを含める
+    // ジャッジ状態を含めたテストケース名の列挙
     Array<FilePath> all_cases_title(all_cases.size());
     for (size_t i = 0; i < all_cases.size(); i++) {
         all_cases_title[i] = U"[{}] {}"_fmt(test_results[i].succeeded ? U"AC" : U"WA", FileSystem::FileName(all_cases[i]));
@@ -209,13 +202,13 @@ void FullTest(const double EPSILON = 1e-8) {
     Mat3x2 viewport_affine;
     double point_scale = 1;
     while (System::Update()) {
-        
         ClearPrint();
         if (case_list.selectedItemIndex and current_selection != case_list.selectedItemIndex) {
             // 問題例の計算
             current_selection = case_list.selectedItemIndex;
             current_instance = GetInputFromFile(all_cases[*current_selection]);
             testcase_result = test_results[*current_selection];
+            viewport_affine = RenderedAreaMat(current_instance, view_area, point_scale);
         }
         if (case_list.selectedItemIndex) {
             Transformer2D transformer{viewport_affine};
