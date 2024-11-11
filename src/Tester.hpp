@@ -46,7 +46,7 @@ Circle SmallestEnclosingCircleNaive(const Array<Vec2>& points, const double epsi
     for (size_t k = 0; k < j; ++k)
     {
         const auto c = SmallestEnclosingCircle(eliminated_points[i], eliminated_points[j], eliminated_points[k]);
-        if ((c.r < smallest.r) && eliminated_points.all([&](const Vec2& p) { return p.distanceFromSq(c.center) <= Math::Square(c.r + epsilon); }))
+        if ((c.r < smallest.r) && eliminated_points.all([&](const Vec2& p) { return contains(c, p, epsilon); }))
         {
             smallest = c;
         }
