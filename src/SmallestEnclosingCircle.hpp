@@ -1,8 +1,16 @@
 #pragma once
 # include <Siv3D.hpp> // Siv3D v0.6.15
 
-inline bool contains(const Circle& C, const Vec2& p, const double error = 1e-12) {
-    return (C.center - p).lengthSq() <= Math::Square(C.r + error);
+/**
+ * @brief 円`C`内に点`p`が含まれているかを判定する。
+ * @note 判定する際、`p`が`C`外にあってもその距離の相対誤差が`relative_error`以下であれば含まれていると判定する。
+ */
+inline bool contains(const Circle& C, const Vec2& p, const double relative_error = 1e-8) {
+    const double d_sq = (C.center - p).lengthSq();
+    const double r_sq = Math::Square(C.r);
+    // d_sq < r_sqならば、点`p`は円の内側にあるので一旦絶対誤差を0とおいて下の条件式が通るようにしておく。
+    const double abs_err = Max(0., d_sq - r_sq);
+    return abs_err/r_sq  < relative_error;
 }
 
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2);
