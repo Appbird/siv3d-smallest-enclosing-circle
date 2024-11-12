@@ -1,6 +1,13 @@
 #pragma once
 # include <Siv3D.hpp> // Siv3D v0.6.15
 
+
+Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2);
+Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double tolerance);
+
+SIV3D_CONCEPT_URBG
+Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urgb = GetDefaultRNG());
+
 /**
  * @brief 円`C`内に点`p`が含まれているかを判定する。
  * @note 判定する際、`p`が`C`外にあってもその距離の相対誤差または絶対誤差が`error`以下であれば含まれていると判定する。
@@ -14,12 +21,6 @@ inline bool contains(const Circle& C, const Vec2& p, const double tolerance = 1e
     if (r_sq == 0) { return abs_err < tolerance; }
     return abs_err/r_sq < tolerance or abs_err < tolerance;
 }
-
-Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2);
-Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double tolerance = 1e-8);
-Circle SmallestEnclosingCircle(const Array<Vec2> points, const double tolerance = 1e-8);
-
-
 
 // 3 点を含む最小の円を返す
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2)
@@ -60,9 +61,9 @@ Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, c
  * - 以下の論文で導入されたアルゴリズムを実装している。
  * Emo Welzl. "Smallest enclosing disks (balls and ellipsoids)." New Results and New Trends in Computer Science 555 (1991): 359-370.
  * 
- * #TODO: 乱数生成器を渡せるように修正する。
  */
-Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance)
+SIV3D_CONCEPT_URBG_
+Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urgb)
 {
     if (points.size() == 0) { return Circle{}; }
     if (points.size() == 1) { return Circle{points[0], 0}; }
@@ -73,9 +74,7 @@ Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance)
     
     // pointsの順序をランダムに並び替える。
     // （ラクラムシさんによって実験的にインデックスをシャッフルするのではなく、配列をコピーして直接シャッフルした方が高速なことがわかった。（キャッシュの恩恵？））
-    
-    // #TODO: 乱数生成器を渡す。
-    points.shuffle();
+    points.shuffle(std::forward<URBG>(urbg));
 
     // 適当な 1 点を含む最小包含円Cから始めて、少しずつ広げていく戦略を取る。
     // Cに含まれない点があったら、それが境界上になるように新たに取り直す。
