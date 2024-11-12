@@ -4,6 +4,7 @@
 
 /** @brief 点`p0`, `p1`, `p2`を含む最小の円を返す。 */
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2);
+
 /** @brief 点`p0`, `p1`, `p2`, `p3`を含む最小の円を返す。
  * @param tolerance 点が円に含まれているか判定する時に用いる許容誤差。相対誤差か絶対誤差がこの値以下であれば円に点が含まれているものとみなす。
  */
