@@ -2,11 +2,25 @@
 # include <Siv3D.hpp> // Siv3D v0.6.15
 
 
+/** @brief 点`p0`, `p1`, `p2`を含む最小の円を返す。 */
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2);
+/** @brief 点`p0`, `p1`, `p2`, `p3`を含む最小の円を返す。
+ * @param tolerance 点が円に含まれているか判定する時に用いる許容誤差。相対誤差か絶対誤差がこの値以下であれば円に点が含まれているものとみなす。
+ */
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double tolerance);
 
+/** @brief 与えらえた点`points`をすべて含む最小の円`C`を返す。
+ * 
+ * - 点群の数に対して期待線形時間で動作する。
+ * 
+ * - 以下の論文で導入されたアルゴリズムを実装している。
+ * Emo Welzl. "Smallest enclosing disks (balls and ellipsoids)." New Results and New Trends in Computer Science 555 (1991): 359-370.
+ * 
+ * @param tolerance 点が円に含まれているか判定する時に用いる許容誤差。相対誤差か絶対誤差がこの値以下であれば円に点が含まれているものとみなす。
+ * @param urbg 乱数生成器。このアルゴリズムには点群の順序をシャッフルする処理が含まれるが、その動作に乱数生成器を用いる。
+ */
 SIV3D_CONCEPT_URBG
-Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urgb = GetDefaultRNG());
+Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urbg = GetDefaultRNG());
 
 /**
  * @brief 円`C`内に点`p`が含まれているかを判定する。
@@ -22,7 +36,6 @@ inline bool contains(const Circle& C, const Vec2& p, const double tolerance = 1e
     return abs_err/r_sq < tolerance or abs_err < tolerance;
 }
 
-// 3 点を含む最小の円を返す
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2)
 {
     // 三角形p0-p1-p2に対して鈍角の存在を判定し、もしあればその対辺（最長辺）を弦とする円が最小の円となる。
@@ -54,22 +67,13 @@ Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, c
 }
 
 
-/** @brief 与えらえた点`points`をすべて含む最小の円`C`を返す。
- * 
- * - 点群の数に対して期待線形時間で動作する。
- * 
- * - 以下の論文で導入されたアルゴリズムを実装している。
- * Emo Welzl. "Smallest enclosing disks (balls and ellipsoids)." New Results and New Trends in Computer Science 555 (1991): 359-370.
- * 
- */
 SIV3D_CONCEPT_URBG_
-Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urgb)
+Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urbg)
 {
     if (points.size() == 0) { return Circle{}; }
     if (points.size() == 1) { return Circle{points[0], 0}; }
     if (points.size() == 2) { return Circle{points[0], points[1]}; }
     if (points.size() == 3) { return SmallestEnclosingCircle(points[0], points[1], points[2]); }
-    // DONE N = 4の時に対処する。
     if (points.size() == 4) { return SmallestEnclosingCircle(points[0], points[1], points[2], points[3], tolerance); }
     
     // pointsの順序をランダムに並び替える。
