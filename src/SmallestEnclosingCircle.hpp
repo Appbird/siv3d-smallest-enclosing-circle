@@ -64,9 +64,12 @@ Circle SmallestEnclosingCircle(Array<Vec2> points, const double error)
     if (points.size() == 4) { return SmallestEnclosingCircle(points[0], points[1], points[2], points[3]); }
     
     // pointsの順序をランダムに並び替える。
-    // ラクラムシさんによって実験的にインデックスをシャッフルするのではなく、配列をコピーして直接シャッフルした方が高速なことがわかった。（キャッシュの恩恵？）
-    // DONE コピーしなくていい
-    points.shuffle();
+    // （ラクラムシさんによって実験的にインデックスをシャッフルするのではなく、配列をコピーして直接シャッフルした方が高速なことがわかった。（キャッシュの恩恵？））
+    
+    // 一時的にシード値を固定
+    DefaultRNG rng = GetDefaultRNG();
+    rng.seed(0);
+    points.shuffle(rng);
 
     // ランダムにとった3点を基底とする最小包含円Cから始めて、少しずつ広げていく戦略を取る。
     // Cに含まれない点があったら、それを含めるように新たに取り直す。
