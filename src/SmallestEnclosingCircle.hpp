@@ -5,19 +5,21 @@
  * @brief 円`C`内に点`p`が含まれているかを判定する。
  * @note 判定する際、`p`が`C`外にあってもその距離の相対誤差または絶対誤差が`error`以下であれば含まれていると判定する。
  */
-inline bool contains(const Circle& C, const Vec2& p, const double error = 1e-8) {
+inline bool contains(const Circle& C, const Vec2& p, const double tolerance = 1e-8) {
     const double d_sq = (C.center - p).lengthSq();
     const double r_sq = Math::Square(C.r);
     // d_sq < r_sqならば、点`p`は円の内側にあるので一旦絶対誤差を0とおいて下の条件式が通るようにしておく。
     const double abs_err = Max(0., d_sq - r_sq);
     // 相対誤差もしくは絶対誤差のいずれかが許容誤差内ならば許容
-    if (r_sq == 0) { return abs_err < error; }
-    return abs_err/r_sq < error or abs_err < error;
+    if (r_sq == 0) { return abs_err < tolerance; }
+    return abs_err/r_sq < tolerance or abs_err < tolerance;
 }
 
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2);
-Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double epsilon = 1e-12);
-Circle SmallestEnclosingCircle(const Array<Vec2> points, const double error = 1e-12);
+Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double tolerance = 1e-8);
+Circle SmallestEnclosingCircle(const Array<Vec2> points, const double tolerance = 1e-8);
+
+
 
 // 3 点を含む最小の円を返す
 Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2)
@@ -32,16 +34,16 @@ Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2)
 }
 
 // 4 点を含む最小の円を返す by ラクラムシさん
-Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double epsilon)
+Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const double tolerance)
 {
     Circle C = SmallestEnclosingCircle(p0, p1, p2);
-    if (not contains(C, p3, epsilon))
+    if (not contains(C, p3, tolerance))
     {
         C = SmallestEnclosingCircle(p0, p1, p3);
-        if (not contains(C, p2, epsilon))
+        if (not contains(C, p2, tolerance))
         {
             C = SmallestEnclosingCircle(p0, p2, p3);
-            if (not contains(C, p1, epsilon))
+            if (not contains(C, p1, tolerance))
             {
                 C = SmallestEnclosingCircle(p1, p2, p3);
             }
@@ -60,14 +62,14 @@ Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, c
  * 
  * #TODO: 乱数生成器を渡せるように修正する。
  */
-Circle SmallestEnclosingCircle(Array<Vec2> points, const double error)
+Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance)
 {
     if (points.size() == 0) { return Circle{}; }
     if (points.size() == 1) { return Circle{points[0], 0}; }
     if (points.size() == 2) { return Circle{points[0], points[1]}; }
     if (points.size() == 3) { return SmallestEnclosingCircle(points[0], points[1], points[2]); }
     // DONE N = 4の時に対処する。
-    if (points.size() == 4) { return SmallestEnclosingCircle(points[0], points[1], points[2], points[3]); }
+    if (points.size() == 4) { return SmallestEnclosingCircle(points[0], points[1], points[2], points[3], tolerance); }
     
     // pointsの順序をランダムに並び替える。
     // （ラクラムシさんによって実験的にインデックスをシャッフルするのではなく、配列をコピーして直接シャッフルした方が高速なことがわかった。（キャッシュの恩恵？））
@@ -82,19 +84,19 @@ Circle SmallestEnclosingCircle(Array<Vec2> points, const double error)
     for (size_t i = 1; i < points.size(); i++) {
         const Vec2& p0 = points[i];
 
-        if (not contains(C, p0, error)) {
+        if (not contains(C, p0, tolerance)) {
             // i番目の点を最小内包円の境界上の点の一つとして固定して、残りの2点を探る。
             C = Circle{ p0, 0.0 };
 
             for (size_t j = 0; j < i; j++) {
                 const Vec2& p1 = points[j];
-                if (not contains(C, p1, error)) {
+                if (not contains(C, p1, tolerance)) {
                     // j番目の点を最小内包円の境界上の点の一つとして固定して、残りの1点を探る。
                     C = Circle{ p0, p1 };
 
                     for (size_t k = 0; k < j; k++) {
                         const Vec2& p2 = points[k];
-                        if (not contains(C, p2, error)) {
+                        if (not contains(C, p2, tolerance)) {
                             // fixed by Nachia
                             C = Triangle(p0, p1, p2).getCircumscribedCircle();
                         }
