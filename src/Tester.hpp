@@ -313,7 +313,7 @@ void DrawTestResult(
     const TestCaseResult result,
     const String& testcase_name,
     const double EPSILON,
-    const double point_scaling = 1
+    const double point_scaling
 ) { 
     // 点群とその最小包含円の描画
     for (const Vec2& point : points)
