@@ -50,12 +50,18 @@ Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, c
     return C;
 }
 
-// 与えらえた点をすべて含む最小の円を返す
-// DONE コピー渡しにする。
+
+/** @brief 与えらえた点`points`をすべて含む最小の円`C`を返す。
+ * 
+ * - 点群の数に対して期待線形時間で動作する。
+ * 
+ * - 以下の論文で導入されたアルゴリズムを実装している。
+ * Emo Welzl. "Smallest enclosing disks (balls and ellipsoids)." New Results and New Trends in Computer Science 555 (1991): 359-370.
+ * 
+ * #TODO: 乱数生成器を渡せるように修正する。
+ */
 Circle SmallestEnclosingCircle(Array<Vec2> points, const double error)
 {
-    // 期待線形時間で動作
-    // c.f. Emo Welzl. "Smallest enclosing disks (balls and ellipsoids)." New Results and New Trends in Computer Science 555 (1991): 359-370.
     if (points.size() == 0) { return Circle{}; }
     if (points.size() == 1) { return Circle{points[0], 0}; }
     if (points.size() == 2) { return Circle{points[0], points[1]}; }
@@ -66,31 +72,31 @@ Circle SmallestEnclosingCircle(Array<Vec2> points, const double error)
     // pointsの順序をランダムに並び替える。
     // （ラクラムシさんによって実験的にインデックスをシャッフルするのではなく、配列をコピーして直接シャッフルした方が高速なことがわかった。（キャッシュの恩恵？））
     
-    // 一時的にシード値を固定
-    DefaultRNG rng = GetDefaultRNG();
-    rng.seed(0);
-    points.shuffle(rng);
+    // #TODO: 乱数生成器を渡す。
+    points.shuffle();
 
-    // ランダムにとった3点を基底とする最小包含円Cから始めて、少しずつ広げていく戦略を取る。
-    // Cに含まれない点があったら、それを含めるように新たに取り直す。
-    Circle C = SmallestEnclosingCircle(points[0], points[1], points[2]);
-    for (size_t i = 3; i < points.size(); i++) {
+    // 適当な 1 点を含む最小包含円Cから始めて、少しずつ広げていく戦略を取る。
+    // Cに含まれない点があったら、それが境界上になるように新たに取り直す。
+    Circle C = Circle{ points[0], 0.0 };
+
+    for (size_t i = 1; i < points.size(); i++) {
         const Vec2& p0 = points[i];
 
         if (not contains(C, p0, error)) {
-            // i番目の点を最小内包円の基底の一つとして固定して、残りの2点を探る。
-            C = SmallestEnclosingCircle(p0, points[0], points[1]);
-            
-            for (size_t j = 2; j < i; j++) {
+            // i番目の点を最小内包円の境界上の点の一つとして固定して、残りの2点を探る。
+            C = Circle{ p0, 0.0 };
+
+            for (size_t j = 0; j < i; j++) {
                 const Vec2& p1 = points[j];
                 if (not contains(C, p1, error)) {
-                    // j番目の点を最小内包円の基底の一つとして固定して、残りの1点を探る。
-                    C = SmallestEnclosingCircle(p0, p1, points[0]);
-                    
-                    for (size_t k = 1; k < j; k++) {
+                    // j番目の点を最小内包円の境界上の点の一つとして固定して、残りの1点を探る。
+                    C = Circle{ p0, p1 };
+
+                    for (size_t k = 0; k < j; k++) {
                         const Vec2& p2 = points[k];
                         if (not contains(C, p2, error)) {
-                            C = SmallestEnclosingCircle(p0, p1, p2);
+                            // fixed by Nachia
+                            C = Triangle(p0, p1, p2).getCircumscribedCircle();
                         }
                     }
                 }
