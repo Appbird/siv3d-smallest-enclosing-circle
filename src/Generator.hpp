@@ -70,7 +70,7 @@ void GenerateLargeInputs() {
     const uint64 seed = 0;
     rng.seed(seed);
     auto tofullpath = [&](const String& filestem){ return U"input-auto/{}.txt"_fmt(filestem); };
-    for (int32_t i = 0; i < 5; i++) {
+    for (int32_t i = 0; i < 30; i++) {
         WriteInputToFile(tofullpath(U"huge-large-{}"_fmt(i)), GenerateHugeLarge(300, rng));
         WriteInputToFile(tofullpath(U"huge-small-{}"_fmt(i)), GenerateHugeSmall(1000, rng, 1e8, 50000));
         WriteInputToFile(tofullpath(U"huge-super-small-{}"_fmt(i)), GenerateHugeSmall(1000, rng, 1e6, 200));
