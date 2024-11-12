@@ -19,6 +19,7 @@ void WriteInputToFile(const FilePath& filepath, const Array<Vec2>& points) {
         fout << points[i].x << " " << points[i].y << "\n";
     }
     fout << std::flush;
+    Console << U"wrote in {}"_fmt(filepath);
 }
 
 /**
