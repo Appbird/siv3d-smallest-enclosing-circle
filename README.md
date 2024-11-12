@@ -126,9 +126,12 @@ $S$ の最小包含円 $C$ 、すなわち $S \subset C$ であるような面�
   - **生成される入力データは固定です。**
   - **このリモートリポジトリには、入力が巨大なデータ（ $N \geq 10^4$ ）は格納されていません。**
     - そのため、ローカルで`FullTest`を走らせる場合には、まず一度`GenerateInput`モードを実行する必要があります。
+- `GenerateAndTest`
+   - 上記の`GenerateInput`モードを行った後、`FullTest`を行う。
 
 このモードは、`Main.cpp`で定義されている変数`constexpr ApplicationMode mode`の値を変更することによって切り替えられます。
-基本的には、まず`GenerateInput`モードでテストケースを自動生成し、その後`FullTest`モードで再度アプリケーションを起動することで、テストを実行できます。
+基本的には、初めて実行する際には`GenerateAndTest`モードを、それ以降は`FullTest`モードを使うと良いです。
+
 
 ## 実行の際の注意
 **このリポジトリには本来のOpenSiv3Dプロジェクトにはある`App/engine`, `App/example`が含まれていません。**
