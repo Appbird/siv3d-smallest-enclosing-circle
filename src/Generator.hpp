@@ -39,9 +39,9 @@ Points GeneratePoints(
     return points;
 }
 
-Array<Vec2> GenerateHugeSmall(size_t N, DefaultRNG& rng) {
+Array<Vec2> GenerateHugeSmall(size_t N, DefaultRNG& rng, double average, double variance) {
     Array<Vec2> points(N);
-    NormalDistribution<double> dist{1e12, 50000};
+    NormalDistribution<double> dist{average, variance};
     for (size_t i = 0; i < N; i++) {
         points[i] = {dist(rng), dist(rng)};
     }
@@ -71,14 +71,15 @@ void GenerateLargeInputs() {
     rng.seed(seed);
     auto tofullpath = [&](const String& filestem){ return U"input-auto/{}.txt"_fmt(filestem); };
     for (int32_t i = 0; i < 5; i++) {
-        WriteInputToFile(tofullpath(U"huge-small-{}"_fmt(i)), GenerateHugeSmall(300, rng));
         WriteInputToFile(tofullpath(U"huge-large-{}"_fmt(i)), GenerateHugeLarge(300, rng));
+        WriteInputToFile(tofullpath(U"huge-small-{}"_fmt(i)), GenerateHugeSmall(1000, rng, 1e8, 50000));
+        WriteInputToFile(tofullpath(U"huge-super-small-{}"_fmt(i)), GenerateHugeSmall(1000, rng, 1e6, 200));
     }
     WriteInputToFile(tofullpath(U"shuffled"),   GenerateShuffled(300));
-    for (int32_t i = 0; i < 10; i++) {
+    for (int32_t i = 0; i < 30; i++) {
         WriteInputToFile(tofullpath(U"many-1e4-{}"_fmt(i)), GeneratePoints(1e4, rng));
     }
-    for (int32_t i = 0; i < 25; i++) {
+    for (int32_t i = 0; i < 50; i++) {
         WriteInputToFile(tofullpath(U"many-1e5-{}"_fmt(i)), GeneratePoints(1e5, rng));
     }
 }
