@@ -145,6 +145,11 @@ void TestAllCases(
     }
     logger << U"[AC] x {} / {}"_fmt(success, all_cases.size());
     logger << U"result: {}"_fmt((success == all_cases.size()) ? U"[AC]" : U"[WA]");
+
+    Console << U"\n";
+    Console << U"[AC] x {} / {}"_fmt(success, all_cases.size());
+    Console << U"result: {}"_fmt((success == all_cases.size()) ? U"\e[42m\e[37m[AC]\e[0m" : U"\e[43m\e[37m[WA]\e[0m");
+    Console << U"\n";
 }
 
 /**
