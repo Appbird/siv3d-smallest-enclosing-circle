@@ -21,7 +21,19 @@ Circle SmallestEnclosingCircle(const Vec2& p0, const Vec2& p1, const Vec2& p2, c
  * @param urbg 乱数生成器。このアルゴリズムには点群の順序をシャッフルする処理が含まれるが、その動作に乱数生成器を用いる。
  */
 SIV3D_CONCEPT_URBG
-Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urbg = GetDefaultRNG());
+Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urbg);
+
+/** @brief 与えらえた点`points`をすべて含む最小の円`C`を返す。
+ * 
+ * - 点群の数に対して期待線形時間で動作する。
+ * 
+ * - 以下の論文で導入されたアルゴリズムを実装している。
+ * Emo Welzl. "Smallest enclosing disks (balls and ellipsoids)." New Results and New Trends in Computer Science 555 (1991): 359-370.
+ * 
+ * @param tolerance 点が円に含まれているか判定する時に用いる許容誤差。相対誤差か絶対誤差がこの値以下であれば円に点が含まれているものとみなす。
+ */
+Circle SmallestEnclosingCircle(const Array<Vec2>& points, const double tolerance);
+
 
 /**
  * @brief 円`C`内に点`p`が含まれているかを判定する。
@@ -111,4 +123,8 @@ Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&
     }
 
     return C;
+}
+
+Circle SmallestEnclosingCircle(const Array<Vec2>& points, const double tolerance) {
+    return SmallestEnclosingCircle(points, tolerance, GetDefaultRNG());
 }
