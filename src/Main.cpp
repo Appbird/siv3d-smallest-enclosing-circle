@@ -8,7 +8,7 @@ enum class ApplicationMode {
     RandomTest,
     GenerateInput
 };
-constexpr ApplicationMode mode = ApplicationMode::FullTest;
+constexpr ApplicationMode mode = ApplicationMode::GenerateInput;
 // Modify this line to change the behavior of this application.
 constexpr double EPSILON = 1e-8;
 

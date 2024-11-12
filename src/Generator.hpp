@@ -76,10 +76,10 @@ void GenerateLargeInputs() {
         WriteInputToFile(tofullpath(U"huge-super-small-{}"_fmt(i)), GenerateHugeSmall(1000, rng, 1e6, 200));
     }
     WriteInputToFile(tofullpath(U"shuffled"),   GenerateShuffled(300));
-    for (int32_t i = 0; i < 30; i++) {
+    for (int32_t i = 0; i < 100; i++) {
         WriteInputToFile(tofullpath(U"many-1e4-{}"_fmt(i)), GeneratePoints(1e4, rng));
     }
-    for (int32_t i = 0; i < 50; i++) {
+    for (int32_t i = 0; i < 100; i++) {
         WriteInputToFile(tofullpath(U"many-1e5-{}"_fmt(i)), GeneratePoints(1e5, rng));
     }
 }
