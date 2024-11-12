@@ -68,7 +68,7 @@ Array<Vec2> GenerateShuffled(size_t N) {
 
 void GenerateLargeInputs() {
     DefaultRNG rng = GetDefaultRNG();
-    const uint64 seed = 0;
+    const uint64 seed = 1;
     rng.seed(seed);
     auto tofullpath = [&](const String& filestem){ return U"input-auto/{}.txt"_fmt(filestem); };
     for (int32_t i = 0; i < 30; i++) {
