@@ -83,7 +83,7 @@ Circle SmallestEnclosingCircleNaive(const Array<Vec2>& points, const double epsi
     for (size_t k = 0; k < j; ++k)
     {
         const auto c = SmallestEnclosingCircle(eliminated_points[i], eliminated_points[j], eliminated_points[k]);
-        if ((c.r < smallest.r) && eliminated_points.all([&](const Vec2& p) { return contains(c, p, epsilon); }))
+        if ((c.r < smallest.r) && eliminated_points.all([&](const Vec2& p) { return detail::Contains(c, p, epsilon); }))
         {
             smallest = c;
         }
@@ -323,7 +323,7 @@ void DrawTestResult(
     // 点群とその最小包含円の描画
     for (const Vec2& point : points)
     {
-        const bool is_point_enclosed = contains(result.actual, point, EPSILON);
+        const bool is_point_enclosed = detail::Contains(result.actual, point, EPSILON);
         Circle{point, 2.5 * point_scaling}.draw(
             is_point_enclosed ? HSV{131, 0.78, 0.90} : HSV{131, 0, 1}
         );
