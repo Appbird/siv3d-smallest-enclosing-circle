@@ -26,7 +26,7 @@ namespace s3d {
 		//////////////////////////////////////////////////
 
         SIV3D_CONCEPT_URBG_
-        Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, URBG&& urbg)
+        Circle SmallestEnclosingCircle(Array<Vec2> points, double tolerance, URBG&& urbg)
         {
             if (points.size() == 0) { return Circle{}; }
             if (points.size() == 1) { return Circle{points[0], 0.0}; }
@@ -75,7 +75,7 @@ namespace s3d {
         }
 
         SIV3D_CONCEPT_URBG_
-        Circle SmallestEnclosingCircle(const Array<Vec2>& points, URBG&& urbg, const double tolerance)
+        Circle SmallestEnclosingCircle(const Array<Vec2>& points, URBG&& urbg, double tolerance)
         {
             return SmallestEnclosingCircle(points, tolerance, urbg);
        }
