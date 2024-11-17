@@ -1,7 +1,7 @@
 # Smallest Enclosing Circle
 このリポジトリでは、C++フレームワークOpenSiv3Dの機能として追加される、最小包含円問題を解く関数`SmallestEnclosingCircle()`を実装・テストします。
 
-Authors (敬称略): Nachia, Luke256, ラクラムシ, polyster, あぷりばーど
+Authors (敬称略): Nachia, Luke256, ラクラムシ, polyster, あぷりばーど, sasa
 
 # 最小包含円問題
 
