@@ -3,18 +3,25 @@
 
 namespace s3d {
     namespace detail {
-        /// @brief 円`c`内に点`p`が含まれているかを判定する。
-        /// @note `p`が`c`外にあっても、`c`の半径に対する 点`p`と`c.r`の間の距離 の **相対誤差または絶対誤差** が`error`以下であれば含まれていると判定する。
-        [[nodiscard]]
-        inline bool Contains(const Circle& c, const Vec2& p, const double tolerance = 1e-8) {
-            const double dSquared = (c.center - p).lengthSq();
-            const double rSquared = Math::Square(c.r);
-            // d_sq < r_sqならば、点`p`は円の内側にあるので一旦絶対誤差を0とおいて下の条件式が通るようにしておく。
-            const double absErr = Max(0.0, dSquared - rSquared);
-            // 相対誤差もしくは絶対誤差のいずれかが許容誤差内ならば許容
-            if (rSquared == 0) { return absErr <= tolerance; }
-            return absErr/rSquared <= tolerance || absErr <= tolerance;
-        }
+        /// @brief 点 p が円 c に含まれているかを判定します。
+		/// @param c 円
+		/// @param p 点
+		/// @param tolerance 許容誤差（相対誤差または絶対誤差のいずれかが許容誤差以下であれば許容）
+		/// @return 点 p が円 c に含まれている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		inline bool Contains(const Circle& c, const Vec2& p, const double tolerance = 1e-8)
+		{
+			const double dSquared = (c.center - p).lengthSq();
+			const double rSquared = (c.r * c.r);
+			const double err = Max(0.0, (dSquared - rSquared));
+
+			if (rSquared == 0)
+			{
+				return (err <= tolerance);
+			}
+			
+			return (((err / rSquared) <= tolerance) || (err <= tolerance));
+		}
     }
 
     namespace Geometry2D {
